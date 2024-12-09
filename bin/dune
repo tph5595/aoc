@@ -1,4 +1,5 @@
 (executable
  (public_name aoc)
  (name main)
- (libraries aoc))
+ (libraries core batteries aoc)
+ (preprocess (pps ppx_jane)))
