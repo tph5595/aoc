@@ -39,7 +39,7 @@ let parse data =
             )
 
 let () = 
-    let data = "./test.txt"
+    let data = "./01.txt"
     |> In_channel.read_all 
     |> String.rstrip 
     |> parse in
