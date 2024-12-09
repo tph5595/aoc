@@ -74,10 +74,25 @@ let check_line_2 values =
 
 let check_line_21 values = 
     let rec check_line' values dir skipped = 
-        0
+        match values with 
+        | [] | _::[] -> true
+        | x::y::z -> match full_check x y dir with
+                    | Some d' -> 
+                            (*no skip*)
+                            check_line' (y::z) d' skipped ||
+                            (*y,z bad; skip y*)
+                            (not skipped && check_line' (x::z) d' true)
+                    (*x, y bad*)
+                    | None -> (
+                        (*make sure we have not used our skip*)
+                            if skipped then false else
+                            (*skip x*)
+                            check_line' (y::z) dir true ||
+                            (*skip y*)
+                            check_line' (x::z) dir true
+                            )
     in
-    values, check_line' values 0 false
-
+    check_line' values 0 false
 
 let part1 data = 
     List.map data ~f:(fun x -> check_line_1 x)
@@ -85,7 +100,7 @@ let part1 data =
     |> List.length
 
 let part2 data = 
-    List.map data ~f:(fun x -> check_line_2 x)
+    List.map data ~f:(fun x -> check_line_21 x)
     |> List.filter ~f:(Fun.id)
     |> List.length
 
