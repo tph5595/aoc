@@ -1,5 +1,5 @@
-(executable
- (public_name aoc)
- (name main)
+(executables
+ (public_names main day02)
+ (names main day02)
  (libraries core batteries aoc)
  (preprocess (pps ppx_jane)))
