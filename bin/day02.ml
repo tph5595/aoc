@@ -32,46 +32,6 @@ let check_line_1 values =
     in
     check_line' values 0
 
-let valid_triple x y z dir= 
-                let f = full_check x y dir in
-                match f with 
-                | None -> None
-                | Some d' -> 
-                    let s = full_check y z d' in
-                    match s with
-                        | Some _ -> Some d'
-                        | None -> None
-
-let check_line_2 values = 
-    let rec check_line' values dir skipped = 
-        match values with 
-        (*Not enough for any matches*)
-        | [] | _::[] -> true
-        (*Only one match possible*)
-        | x::y::[] -> (match full_check x y dir with
-                    | Some _ -> true
-                    | None -> false)
-        (*skip possible*)
-        | x::y::z::r -> 
-                    let first = full_check x y dir in
-                    match valid_triple x y z dir with
-                        (*Triple is valid, no need to skip anything*)
-                        | Some d -> check_line' (y::z::r) d skipped
-                        (*NOT valid, try to skip y*)
-                        | None -> 
-                                if skipped then false 
-                                (*check if we can just skip the final value*)
-                                else if List.is_empty r && not skipped && Option.is_some first then true else
-                                let d = full_check x z dir in
-                                    match d with
-                                        | Some d' -> check_line' (z::r) d' true
-                                        | None -> false
-    in
-    match values, check_line' values 0 false with
-    | _, true -> true
-    | _::r, false -> check_line' r 0 false (*check if we can just remove the first value*)
-    | _, false -> false
-
 let check_line_21 values = 
     let rec check_line' values dir skipped = 
         match values with 
@@ -112,7 +72,7 @@ let parse data =
             )
 
 let () = 
-    let data = "./02.txt"
+    let data = "./test02.all.txt"
     |> In_channel.read_all 
     |> String.rstrip 
     |> parse in
