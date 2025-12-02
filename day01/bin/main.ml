@@ -27,15 +27,40 @@ let part1 input =
     (*     let Hashtbl.find seen (size-l)%size *)
     (*     l + (Hashtbl.find)) straight *)
 
-let part2 _ = 0
+let part2 input = 
+    let start = 50 in 
+    let size = 100 in 
+    let turns = input 
+    |> List.map ~f:(fun x -> 
+        let s = String.to_list x in 
+        match s with 
+        | hd :: tl when phys_equal hd 'R' -> tl |> String.of_list |> Int.of_string
+        | hd :: tl when phys_equal hd 'L' -> (tl |> String.of_list |> Int.of_string ) * -1
+        | _ -> 0
+    ) in 
+    let end_positions = turns
+    |> List.fold_left ~init:[start] ~f:(fun l x -> [x + List.hd_exn l]@l)
+    |> List.map ~f:(fun x -> x % size)
+    in 
+    let internal = turns 
+    |> List.fold_left ~init:0 ~f:(fun c x -> c + x/100) in 
+    let (_, between) = end_positions
+    |> List.fold_left ~init:(start,0) ~f:(fun (last, count) x -> 
+            if not (phys_equal (last/size) (x/size)) 
+                || not (phys_equal (last > 0) (x > 0)) 
+            then (x, count + 1) 
+            else (x, count)
+    )
+    in 
+    internal, between
 
 let read_file (filename : string) : string list =
   In_channel.read_lines filename
 
-let file = "input"
+let file = "test2"
 
 let () = 
     let result = part1 (read_file file ) in 
     Printf.printf "Part 1: %d\n" result;
-    let result = part2(read_file file ) in 
-    Printf.printf "Part 2: %d\n" result;
+    let result, r2 = part2(read_file file ) in 
+    Printf.printf "Part 2: %d\t%d\n" result r2;
